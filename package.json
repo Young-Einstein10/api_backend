@@ -1,0 +1,13 @@
+{
+  "name": "backend_teamwork",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "https://github.com/Young-Einstein10/backend_teamwork.git",
+  "author": "Young-Einstein10 <aabdulrahmanyusuf@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
