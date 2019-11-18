@@ -30,25 +30,25 @@ app.get('/', (request, response) => {
 });
 
 // Admin SignIn
-app.use('/admin', adminRoute);
+app.use('/admin/v1', adminRoute);
 
 // Account Signup and Login
-app.use('/auth', acctRoutes);
+app.use('/auth/v1', acctRoutes);
 
 // Getting and Modifying users
-app.use('/getAllUsers', userRoutes);
-app.use('/getUserById', userRoutes);
-app.use('/updateUser', userRoutes);
-app.use('/deleteUser', userRoutes);
+app.use('/v1/getAllUsers', userRoutes);
+app.use('/v1/getUserById', userRoutes);
+app.use('/v1/updateUser', userRoutes);
+app.use('/v1/deleteUser', userRoutes);
 
 
 //  Aricles
-app.use('/articles', articleRoutes);
+app.use('/v1/articles', articleRoutes);
 
 // GIFs
-app.use('/gifs', gifRoutes);
+app.use('/v1/gifs', gifRoutes);
 
 // Central Middleware for Article and GIFs
-app.use('/feed', centralRoutes);
+app.use('/v1/feed', centralRoutes);
 
 module.exports = app;
