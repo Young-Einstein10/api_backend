@@ -33,22 +33,22 @@ app.get('/', (request, response) => {
 app.use('/admin/v1', adminRoute);
 
 // Account Signup and Login
-app.use('/auth/v1', acctRoutes);
+app.use('/api/v1/auth/', acctRoutes);
 
 // Getting and Modifying users
-app.use('/v1/getAllUsers', userRoutes);
-app.use('/v1/getUserById', userRoutes);
-app.use('/v1/updateUser', userRoutes);
-app.use('/v1/deleteUser', userRoutes);
+app.use('/api/v1/getAllUsers', userRoutes);
+app.use('/api/v1/getUserById', userRoutes);
+app.use('/api/v1/updateUser', userRoutes);
+app.use('/api/v1/deleteUser', userRoutes);
 
 
 //  Aricles
-app.use('/v1/articles', articleRoutes);
+app.use('/api/v1/articles', articleRoutes);
 
 // GIFs
-app.use('/v1/gifs', gifRoutes);
+app.use('/api/v1/gifs', gifRoutes);
 
 // Central Middleware for Article and GIFs
-app.use('/v1/feed', centralRoutes);
+app.use('/api/v1/feed', centralRoutes);
 
 module.exports = app;

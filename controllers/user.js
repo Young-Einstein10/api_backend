@@ -11,31 +11,6 @@ const getAllUsers = (request, response) => {
   })
 }
 
-// // CREATE USER
-// const createUser = (request, response) => {
-//   const {firstname, lastname, email, password, gender, jobRole, department, address } = request.body; 
-
-//   pool.query('INSERT INTO employees (firstname, lastname, email, password, gender, jobRole, department, address) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [firstname, lastname, email, password, gender, jobRole, department, address], (error, results) => {
-//     if (error) {
-//       throw error
-//     }
-//     pool.query(`SELECT * FROM employees WHERE email='${email}'`, (error, results) => {
-//       if(error) {
-//         throw error
-//       }
-//       for (value of results.rows) {
-//         // console.log(value.id)
-//         var userId = value.id
-//         return userId
-//       }
-//       // console.log(results.rows)
-//       response.status(201).json({id: userId})
-//     })
-
-//     response.status(201).send(`User added with ID: ${userId}`);
-//   })
-// }
-
 
 // GET SINGLE USER
 const getUserById = (request, response) => {
@@ -48,8 +23,6 @@ const getUserById = (request, response) => {
     response.status(200).json(results.rows)
   })
 }
-
-
 
 
 // UPDATE USER

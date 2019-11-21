@@ -1,4 +1,5 @@
 const pool = require("../models/queries");
+const jwt = require("jsonwebtoken");
 
 const postArticles = (request, response) => {
 	const { title, article, employee_id, createdon } = request.body;
@@ -37,26 +38,37 @@ const getArticleById = (request, response) => {
 
 	pool.query('SELECT * FROM articles WHERE article_id = $1', [article_id], (error, results) => {
 	   if (error) {
-	      throw error
+		return response.status(400).json({
+			status: 'error',
+			error: error
+		})
 	   }
 	   response.status(200).json(results.rows)
 	})
 }
 
-const getAllArticles = (request, response ) => {
-	pool.query('select * from articles ORDER BY article_id ASC', (error, results) => {
-	    if (error) {
-	      throw error
-	    }
-	    response.status(200).json(results.rows)
-	})
-}
+// const getAllArticles = (request, response ) => {
+// 	pool.query('select * from articles ORDER BY article_id ASC', (error, results) => {
+// 	    if (error) {
+// 	      throw error
+// 	    }
+// 	    response.status(200).json(results.rows)
+// 	})
+// }
  
 const comment = (request, response) => {
 	const article_id = parseInt(request.params.id);
-	const  { comments, author_id, created_on } = request.body;
+	const  { comments } = request.body;
+	const token = request.headers.authorization.split(' ')[1];
+	const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+	if (!decodedToken) {
+		throw 'Invalid Token';
+	} 
+	const author_id = decodedToken.userId;
+	
+	
 
-	pool.query('INSERT INTO article_comments (comments, author_id, article_id, created_on) VALUES ($1, $2, $3, $4)', [comments, author_id,article_id, created_on], (error, results) => {
+	pool.query('INSERT INTO article_comments (comments, author_id, article_id, created_on) VALUES ($1, $2, $3, $4)', [comments, author_id, article_id, new Date()], (error, results) => {
 	   if (error) {
 	      throw error
 	   }
@@ -100,7 +112,15 @@ const updateArticle = (request, response) => {
 	    if (error) {
 	    	throw error
 	    }
-	    response.status(200).send(`Article modified with ID: ${article_id}`);
+		// response.status(200).send(`Article modified with ID: ${article_id}`);
+		response.status(201).json({
+	    	status: "success",
+	    	data: {
+	    		message: `Article modified with ID: ${article_id}`,
+	    		articleId: article_id // dont know how to access articleID FROM DB???...will come back to it
+
+	    	}
+	    });
 	});
 }
 // select * from articles ORDER BY article_id ASC
@@ -112,14 +132,19 @@ const deleteArticle = (request, response) => {
 	    if (error) {
 	      throw error
 	    }
-	    response.status(200).send(`article deleted with ID: ${article_id}`)
+	    response.status(200).json({
+			status: "success",
+			data: {
+				message: `article deleted with ID: ${article_id}`
+			}
+		})
 	});
 }
 
 
 
 module.exports = { 
-	getAllArticles,
+	// getAllArticles,
 	postArticles,
 	getArticleById,
 	comment,
