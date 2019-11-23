@@ -7,7 +7,7 @@ const { multerUploads, dataUri } = require('../middleware/multerUploads');
 // const multipartMiddleware = multipart();
 
 
-router.post('/', multerUploads, gif.postGif);
+router.post('/', auth, multerUploads, gif.postGif);
 router.get('/:id', auth, gif.getGifById);
 router.post('/:id/comment', auth, gif.comment);
 router.patch('/:id', auth, gif.updateGif);

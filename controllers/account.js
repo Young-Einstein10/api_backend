@@ -5,6 +5,14 @@ const jwt = require('jsonwebtoken');
 
 // CREATE USER
 const signup = (request, response) => {
+  const token = request.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, 'ADMIN_TOKEN_SECRETKEY');
+  if (!decodedToken) {
+    response.status(401).json({
+      status: "error",
+      message: "You have no authorization"
+    });;
+  } 
   const {firstname, lastname, email, password, gender, jobrole, department, address } = request.body; 
 
   // Check if valid email and password was entered
@@ -21,13 +29,17 @@ const signup = (request, response) => {
     // Checking uniqueness of email (if email is present in DB)
     pool.query('SELECT email FROM employees', (error, results) => {
       if (error) {
-        throw error
+        return response.status(500).json({
+          status: "error",
+          error
+        })
       }
       // console.log(results.rows)
       results.rows.filter((value) => {
         if(email == value.email) {
           return response.status(400).json({
-            message: "User email already exists"
+            status: "error",
+            error: "User email already exists"
           })
         }
         return email;
@@ -39,16 +51,22 @@ const signup = (request, response) => {
       (hash) => {
         pool.query('INSERT INTO employees (firstname, lastname, email, password, gender, jobrole, department, address) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [firstname, lastname, email, hash, gender, jobrole, department, address], (error, results) => {
             if (error) {
-              throw error
+              return response.status(500).json({
+                status: "error",
+                error
+              })
             }
             // console.log(results)
             // const [message] = results.rows;
 
             pool.query(`SELECT * FROM employees WHERE email='${email}'`, (error, results) => {
               if(error) {
-                throw Error
+                return response.status(500).json({
+                  status: "error",
+                  error
+                })
               }
-              console.log(results.rows);
+              // console.log(results.rows);
 
               const token = jwt.sign({ userId: results.rows[0].id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });
 
@@ -57,7 +75,6 @@ const signup = (request, response) => {
                 data: {
                   message: "User Account successfully created",
                   token,
-                  userId: results.rows[0].id                     
                 }
               });
             })      
@@ -94,18 +111,21 @@ const signin = (request, response) => {
     // Checking uniqueness of email (if email is present in DB)
     pool.query('SELECT email FROM employees', (error, results) => {
       if (error) {
-        throw error
+        return response.status(500).json({
+          status: "error",
+          error
+        })
       }
       // console.log(results.rows.find(employee => employee.email == email))      
       const userEmail = results.rows.find(employee => employee.email == email)
         // console.log(userEmail)
       if (!userEmail) {
-          return response.status(400).json({message: 'email not registered'})
+          return response.status(400).json({status: "error", error: 'email not registered'})
       } 
 
         pool.query(`SELECT * FROM employees WHERE email='${userEmail.email}'`, (error, results, next) => {  
           if(error) {
-            return response.status(401).json({message: error})
+            return response.status(401).json({status: "error", error: error})
           }     
           const [message] = results.rows;
    
@@ -113,28 +133,27 @@ const signin = (request, response) => {
             (valid) => {
               if (!valid) {
                 return response.status(401).json({
+                  status: "error",
                   error: new Error('Incorrect password!')
                 });
               }
               const token = jwt.sign({ userId: message.id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });
               response.status(200).json({
-                userId: message.id,
-                token: token
+                status: "success",
+                data: {
+                  userId: message.id,
+                  token: token
+                }
               });
             }
           ).catch((error) => {
             response.status(500).json({
+              status: "error",
               error: next(new Error(error))
             });
-          })
-
-          // return response.status(201).json({
-          //   message: results.rows                       
-          // })
-
+          })         
         })           
     })
-    // bcrypt.compare(password, userPassword).then()
   } else {
     response.status(400).json({
       status: "error",

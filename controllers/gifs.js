@@ -2,7 +2,7 @@ const pool = require("../models/queries");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;   
 const dotenv = require('dotenv');
-const dataUri = require('../middleware/multerUploads');
+const { dataUri } = require('../middleware/multerUploads');
 
 
 
@@ -15,69 +15,91 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET 
 });
 
-// const postGif = (request, response) => {
-// 	let filename = request.files.dataFile.path;
-
-// 	cloudinary.uploader.upload(filename, {tags: "gotemps", resource_type: "auto"})
-// 		.then(file => console.log(file.public_id, file.url))
-// 		.catch(error => console.warn(error))
-// }
-
 
 const postGif = (request, response, next) => {
 	const { title } = request.body;
 	if(request.file) {
 	 const file = dataUri(request).content;
 	 return cloudinary.uploader.upload(file).then((result) => {
-	   const image_url = result.url;
-	   return image_url;
+	   	const image_url = result.url;
+
+	   	const token = request.headers.authorization.split(' ')[1];
+		const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+		if (!decodedToken) {
+			response.status(500).json({
+				status: "error",
+				error: "Invalid Token"
+			});
+		} 
+		const employee_id = decodedToken.userId;
+
+		pool.query('INSERT INTO gifs (title, image_url, employee_id, created_on) VALUES ($1, $2, $3, $4) RETURNING *', [title, image_url, employee_id, new Date()], (error, results) => {
+			if(error) {
+				response.status(500).json({
+					status: "error",
+					error: error
+				});
+			}
+
+			return response.status(201).json({
+				status: 'success',
+	            data: results.rows
+			})
+		})
 	 }).catch((error) => response.status(400).json({
-	   message: 'someting went wrong while processing your request',
-	   data: {
-		 error
-	   }
+	   status: 'error: someting went wrong while uploading your image',
+	   error
 	 }))
 	}
-
-	const token = request.headers.authorization.split(' ')[1];
-	const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-	if (!decodedToken) {
-		throw 'Invalid Token';
-	} 
-	const employee_id = decodedToken.userId;
-
-	pool.query('INSERT INTO gifs (title, image_url, employee_id, created_on) VALUES ($1, $2, $3, $4) RETURNING *', [title, image_url, employee_id, new Date()], (error, result) => {
-		if(error) {
-			throw Error
-		}
-
-		return response.status(201).json({
-			status: 'success',
-            data: {
-				gif_id,
-				message: "GIF message successfully posted",
-				// created_on: ,
-				// title: ,
-				image_url
-			}
-		})
-	})
+	
 }
 
 const getGifById = (request, response) => {
 	const gif_id = parseInt(request.params.id);
 
-	pool.query('SELECT * FROM gifs WHERE gif_id = $1', [gif_id], (error, result) => {
+	pool.query('SELECT * FROM gifs WHERE gif_id = $1', [gif_id], (error, results) => {
 		if (error) {
-			return response.status(400).json({
+			return response.status(404).json({
 				status: 'error',
-                error: error
+                error: 'GIF not found'
 			})
 		}
-		response.status(200).json({
-			status: "success",
-			data: results.rows
-		});
+		const { gif_id, title, image_url, employee_id, created_on } = results.rows[0];
+
+		pool.query('SELECT gif_comment_id as "commentId", comments as "comment", author_id as"authorId", created_on as "createdOn" FROM gif_comments WHERE gif_id = $1', [gif_id], (error, results) => {
+	   		if(error) {
+	   			return response.status(500).JSON({
+	   				status: "error",
+	   				error: error
+	   			})
+	   		}
+
+
+	   		if (!results.rows.length) {
+	   			return response.status(200).json({
+	              status: 'success',
+	              data: {
+	                id: gif_id,
+	                createdOn: created_on,
+	                title,
+	                image_url,
+	                comments: []
+	              },
+	            });
+	        }
+	        
+	        return response.status(200).json({
+		    	status: 'success',
+		        data: {
+			        id: gif_id,
+		            createdOn: created_on,
+		            title,
+		            image_url,
+			        comments: results.rows
+		        }       
+	        });  	
+	   		            
+	   	})
 	})
 }
 
@@ -88,39 +110,47 @@ const comment = (request, response) => {
 	const token = request.headers.authorization.split(' ')[1];
 	const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
 	if (!decodedToken) {
-		throw 'Invalid Token';
+		response.status(401).json({
+			status: "error",
+			message: 'Invalid User Credentials'
+		})
 	} 
+
 	const author_id = decodedToken.userId;
 
-
-	pool.query('INSERT INTO gif_comments (comments, author_id, article_id, created_on) VALUES ($1, $2, $3, $4)', [comments, author_id, article_id, new Date()], (error, results) => {
+	pool.query('INSERT INTO gif_comments (comments, author_id, gif_id, created_on) VALUES ($1, $2, $3, $4) RETURNING *', [comments, author_id, gif_id, new Date()], (error, results) => {
 		if (error) {
-		   throw error
+		   	response.status(500).json({
+				status: "error",
+				message: "error saving comnent in database"
+			})
 		}
-		pool.query('SELECT gif_comments.article_comment_id, gif_comments.comments, gif_comments.article_id, gif_comments.created_on, articles.article, articles.title FROM gif_comments, articles', (error, results) => {
+		pool.query('SELECT gif_comments.gif_comment_id, gif_comments.comments, gif_comments.gif_id, gif_comments.created_on, gifs.image_url, gifs.title FROM gif_comments, gifs', (error, results) => {
 				if(error) {
-					throw error
+					response.status(500).json({
+						status: "error",
+						message: "error saving comnent in database"
+					})
 				}
-				pool.query('SELECT gif_comments.article_comment_id, gif_comments.comments, gif_comments.author_id, gif_comments.article_id, gif_comments.created_on, articles.title, articles.article FROM gif_comments JOIN articles on gif_comments.article_id = articles.article_id', 
+				pool.query('SELECT gif_comments.gif_comment_id, gif_comments.comments, gif_comments.author_id, gif_comments.gif_id, gif_comments.created_on, gifs.title, gifs.image_url FROM gif_comments JOIN gifs on gif_comments.gif_id = gifs.gif_id', 
 					 (error, results) => {
 					if(error) {
 						response.status(500).json({
 							status: "error",
-							message: "internal server error"
+							message: "error saving comnent in database"
 						})
 					}
+					console.log(results.rows);
 					const res = results.rows.find(item => item.comments == request.body.comments)
-					// console.log(res);
- 
-					const { title, article, comments, created_on } = res;
+					const { title, image_url, comments, created_on } = res;
 					// return response.status(201).send("success")
 					return response.status(201).json({
 						status: "success",
 						data: {	
 							message: "comment successfully created",
 							createdOn: created_on,
-							articleTitle: title,
-							article: article,
+							gifTitle: title,
+							image_url: image_url,
 							comment: comments			    		
 						}
 					})
@@ -155,14 +185,17 @@ const updateGif = (request, response) => {
 const deleteGif = (request, response) => {
 	const gif_id = parseInt(request.params.id);
 
-	pool.query('DELETE FROM articles WHERE gif_id = $1', [gif_id], (error, results) => {
+	pool.query('DELETE FROM gifs WHERE gif_id = $1', [gif_id], (error, results) => {
 	    if (error) {
-	      throw error
+	      response.status(500).json({
+	      	status: "error",
+	      	error
+	      })
 	    }
 	    response.status(200).json({
 			status: "success",
 			data: {
-				message: `GIF deleted with ID: ${gif_id}`
+				message: 'GIF successfully deleted'
 			}
 		})
 	});

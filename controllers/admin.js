@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 
 // username = admin@teamwork.com, password = adminWork
-const signin = (request, response) => {
+const adminSignin = (request, response) => {
 	const { username, password } = request.body;
 
   // Check if valid username and password was entered
@@ -18,38 +18,25 @@ const signin = (request, response) => {
   }
 
   if (validateUser(request.body)) {
-    // Checking uniqueness of email (if email is present in DB)
-    pool.query('SELECT username FROM admin', (error, results) => {
-      if (error) {
-        throw error
-      }
-      // console.log(results.rows.find(employee => employee.email == email))      
-      const usersUsername = results.rows.find(admin => admin.username == username)
-        // console.log(userEmail)
-      if (!usersUsername) {
-          return response.status(400).json({message: 'username not registered'})
-      } 
-
-        pool.query(`SELECT * FROM admin WHERE username='${usersUsername.username}'`, (error, results, next) => {  
+    pool.query('SELECT * FROM admin WHERE username=$1', [username], (error, results) => {  
           if(error) {
-            console.log("error 1")
-            return response.status(401).json({message: error})
+            return response.status(401).json({status: "error", error})
           }     
-          const [message] = results.rows;
 
-          if(message.password !== 'adminWork') {
+          if(results.rows[0].password !== 'adminWork') {
             return response.status(401).json({
+              status: 'error',
               error: new Error('Incorrect password!')
             });
           }
           
-          const token = jwt.sign({ userId: message.id }, 'RANDOM_TOKEN_SECRETKEY', { expiresIn: '24h' });
-            response.status(200).json({
-              userId: message.id,
-              token: token
-          });         
-      })           
-    })
+    const token = jwt.sign({ userId: results.rows[0].id, isAdmin: results.rows[0].isadmin }, 'ADMIN_TOKEN_SECRETKEY', { expiresIn: '24h' });
+      response.status(200).json({
+        userId: results.rows[0].id,
+        token: token
+      });              
+    })       
+     
     // bcrypt.compare(password, userPassword).then()
   } else {
     response.status(400).json({
@@ -61,4 +48,4 @@ const signin = (request, response) => {
 
 
 
-module.exports = { signin }
+module.exports = { adminSignin }

@@ -30,7 +30,7 @@ app.get('/', (request, response) => {
 });
 
 // Admin SignIn
-app.use('/admin/v1', adminRoute);
+app.use('/api/v1/admin', adminRoute);
 
 // Account Signup and Login
 app.use('/api/v1/auth/', acctRoutes);
@@ -42,7 +42,7 @@ app.use('/api/v1/updateUser', userRoutes);
 app.use('/api/v1/deleteUser', userRoutes);
 
 
-//  Aricles
+//  Articles
 app.use('/api/v1/articles', articleRoutes);
 
 // GIFs

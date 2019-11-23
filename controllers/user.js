@@ -18,9 +18,12 @@ const getUserById = (request, response) => {
 
   pool.query('SELECT * FROM employees WHERE id = $1', [id], (error, results) => {
     if (error) {
-      throw error
+      return response.status(500).json({
+        status: "error",
+        error
+      })
     }
-    response.status(200).json(results.rows)
+    response.status(200).json({status: "success", data: results.rows})
   })
 }
 
@@ -35,7 +38,10 @@ const updateUser = (request, response) => {
     [name, email, id],
     (error, results) => {
       if (error) {
-        throw error
+        return response.status(500).json({
+          status: "error",
+          error
+        })
       }
       response.status(200).send(`User modified with ID: ${id}`)
     }
@@ -49,7 +55,10 @@ const deleteUser = (request, response) => {
 
   pool.query('DELETE FROM employees WHERE id = $1', [id], (error, results) => {
     if (error) {
-      throw error
+      return response.status(500).json({
+        status: "error",
+        error
+      })
     }
     response.status(200).send(`User deleted with ID: ${id}`)
   })
