@@ -1,0 +1,122 @@
+CREATE TABLE articles
+(
+    article_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( CYCLE INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title text COLLATE pg_catalog."default" NOT NULL,
+    article text COLLATE pg_catalog."default" NOT NULL,
+    employee_id integer NOT NULL,
+    created_on timestamp(4) without time zone NOT NULL,
+    CONSTRAINT articles_pkey PRIMARY KEY (article_id),
+    CONSTRAINT "articles_employeeId_fkey" FOREIGN KEY (employee_id)
+        REFERENCES employees (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        NOT VALID
+)
+
+
+CREATE TABLE gif_comments
+(
+    "gif_comment_id" SERIAL,
+    comments text COLLATE pg_catalog."default" NOT NULL,
+    "gif_id" integer NOT NULL,    
+    "author_id" integer NOT NULL,
+    "created_on" timestamp with time zone NOT NULL,
+    CONSTRAINT "article_comment_id" PRIMARY KEY ("article_comment_id"),
+    CONSTRAINT "gif_id" FOREIGN KEY ("gif_id")
+        REFERENCES gifs ("gif_id") MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        NOT VALID,
+    CONSTRAINT "author_id" FOREIGN KEY ("author_id")
+        REFERENCES employees (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        NOT VALID
+)
+
+
+CREATE TABLE article_comments
+(
+    article_comment_id SERIAL,
+    comments text COLLATE pg_catalog."default" NOT NULL,
+    article_id integer NOT NULL,
+    author_id integer NOT NULL,
+    created_on timestamp with time zone NOT NULL,
+    CONSTRAINT article_comment_id PRIMARY KEY (article_comment_id),
+    CONSTRAINT article_id FOREIGN KEY (article_id)
+        REFERENCES articles (article_id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        NOT VALID,
+    CONSTRAINT author_id FOREIGN KEY (author_id)
+        REFERENCES employees (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        NOT VALID
+)
+
+
+
+
+
+CREATE TABLE employees
+(
+    address text COLLATE pg_catalog."default" NOT NULL,
+    department text COLLATE pg_catalog."default" NOT NULL,
+    email text COLLATE pg_catalog."default" NOT NULL,
+    firstname text COLLATE pg_catalog."default" NOT NULL,
+    gender text COLLATE pg_catalog."default" NOT NULL,
+    id SERIAL,
+    jobrole text COLLATE pg_catalog."default" NOT NULL,
+    lastname text COLLATE pg_catalog."default" NOT NULL,
+    password text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT employees_pkey PRIMARY KEY (id),
+    CONSTRAINT "employeeid" UNIQUE (id)
+
+)
+
+
+
+CREATE TABLE gifs
+(
+    "gif_id" SERIAL,
+    title text COLLATE pg_catalog."default" NOT NULL,
+    "imageUrl" text COLLATE pg_catalog."default" NOT NULL,
+    "employee_id" integer NOT NULL,
+    "created_on" timestamp with time zone NOT NULL,
+    CONSTRAINT "gif_id" PRIMARY KEY ("gif_id"),
+    CONSTRAINT "employeeid" FOREIGN KEY ("employeeid")
+        REFERENCES employees (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        NOT VALID
+)
+
+
+CREATE TABLE IF NOT EXISTS admin
+(
+    id SERIAL,
+    username text NOT NULL,
+    password text NOT NULL,
+    isAdmin BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT id PRIMARY KEY (id)
+)
+
+
+SELECT gif_comments.gif_comment_id, 
+gif_comments.comments, 
+gif_comments.gif_id, 
+gif_comments.created_on, 
+gifs.image_url, 
+gifs.title 
+FROM gif_comments, gifs;
+
+
+SELECT gif_comments.gif_comment_id, 
+gif_comments.comments, 
+gif_comments.author_id, 
+gif_comments.gif_id, 
+gif_comments.created_on, 
+gifs.title, 
+gifs.image_url 
+FROM gif_comments JOIN gifs on gif_comments.gif_id = gifs.gif_id
