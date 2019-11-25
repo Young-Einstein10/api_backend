@@ -8,9 +8,9 @@ const signup = (request, response) => {
   const token = request.headers.authorization.split(' ')[1];
   const decodedToken = jwt.verify(token, 'ADMIN_TOKEN_SECRETKEY');
   if (!decodedToken) {
-    response.status(401).json({
+    response.status(500).json({
       status: "error",
-      message: "You have no authorization"
+      message: "Invalid Token"
     });;
   } 
   const {firstname, lastname, email, password, gender, jobrole, department, address } = request.body; 
@@ -120,7 +120,7 @@ const signin = (request, response) => {
       const userEmail = results.rows.find(employee => employee.email == email)
         // console.log(userEmail)
       if (!userEmail) {
-          return response.status(400).json({status: "error", error: 'email not registered'})
+          return response.status(401).json({status: "error", error: 'email not registered'})
       } 
 
         pool.query(`SELECT * FROM employees WHERE email='${userEmail.email}'`, (error, results, next) => {  
@@ -134,7 +134,7 @@ const signin = (request, response) => {
               if (!valid) {
                 return response.status(401).json({
                   status: "error",
-                  error: new Error('Incorrect password!')
+                  error: 'Incorrect password'
                 });
               }
               const token = jwt.sign({ userId: message.id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });

@@ -1,101 +1,25 @@
-var app = require("../app");
-var route = require("../routes/user");
-// var server = require("../server");
-var Request = require("request");
+var request = require("supertest");
 
 
-describe("Server", () => {
+describe("User can", () => {
     var server;
-    beforeAll(() => {
+    beforeEach(() => {
         server = require("../server");
     });
-    afterAll(() => {
+    afterEach(() => {
         server.close();
     });
 
-    describe("GET /", () => {
-        var data = {};
-        beforeAll((done) => {
-            Request.get("http://localhost:3000/", (error, response, body) => {
-                data.status = response.statusCode;
-                data.body = body;
-                done();
-            });
+
+    describe('GET /', () => {
+        it('should return a 200 response for getting a single gif', async () => {
+          const response = await request(server)
+            .get('/')
+            
+          expect(response.status).toBe(200);
+          expect(response.body).toEqual(jasmine.objectContaining({
+            info: 'Node.js, Express, and Postgres API'
+          }));
         });
-
-        it("Status 200", () => {
-            expect(data.status).toBe(200);
-        });
-
-        it("Body", () => {
-            expect(JSON.parse(data.body)).toEqual({'info': 'Node.js, Express, and Postgres API'});
-        });
-    });
-
-    // describe("GET /getAllUsers", () => {
-    // 	var data = {};
-    //     beforeAll((done) => {
-    //         Request.get("http://localhost:3000/getAllUsers", (error, response, body) => {
-    //             data.status = response.statusCode;
-    //             data.body = body;
-    //             done();
-    //         });
-    //     });
-
-    //     it("Status 200", () => {
-    //         expect(data.status).toBe(200);
-    //     });
-
-    //     it("Body", () => {
-    //         expect(JSON.parse(data.body)).toEqual({'info': 'Node.js, Express, and Postgres API'});
-    //     });
-    // })
-
-    // describe("POST /auth/create-user", () => {
-
-    // });
-
-    // describe("POST /auth/signin", () => {
-
-    // });
-
-    // describe("POST /gifs", () => {
-
-    // });
-
-    // describe("POST /articles", () => {
-
-    // });
-
-    // describe("POST /articles/<:articleId>", () => {
-
-    // });
-
-    // describe("DELETE /articles/<:articleId>", () => {
-
-    // });
-
-    // describe("DELETE /gifs/<:gifId>", () => {
-
-    // });
-
-    // describe("POST /articles/<articleId>/comment", () => {
-
-    // });
-
-    // describe("POST /gifs/<:gifId>/comment", () => {
-
-    // });
-
-    // describe("GET /feed", () => {
-
-    // });
-
-    // describe("GET /articles/<:articleId>", () => {
-
-    // });
-
-    // describe("GET /gifs/<:gifId>", () => {
-
-    // });
-});
+    })
+})

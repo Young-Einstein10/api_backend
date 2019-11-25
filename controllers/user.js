@@ -7,7 +7,10 @@ const getAllUsers = (request, response) => {
     if (error) {
       throw error
     }
-    response.status(200).json(results.rows)
+    response.status(200).json({
+      status: "success",
+      data: results.rows
+    })
   })
 }
 
@@ -31,19 +34,23 @@ const getUserById = (request, response) => {
 // UPDATE USER
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
-  const { firstname, lastname, email, password, gender, jobRole, department, address } = request.body
+  const { firstname, lastname, email, password, gender, jobrole, department, address } = request.body
 
   pool.query(
-    'UPDATE employees SET firstname = $1, email = $2 WHERE id = $3',
-    [name, email, id],
+    `UPDATE employees SET firstname = $1, lastname = $2, email = $3, password = $4, gender = $5, jobrole = $6, department = $7, address = $8 WHERE id = ${id}`,
+    [firstname, lastname, email, password, gender, jobrole, department, address],
     (error, results) => {
       if (error) {
+        console.error(error)
         return response.status(500).json({
           status: "error",
           error
         })
       }
-      response.status(200).send(`User modified with ID: ${id}`)
+      response.status(200).json({
+        status: "success",
+        message: `user successfully updated with ${id}`
+      })
     }
   )
 }
@@ -60,7 +67,10 @@ const deleteUser = (request, response) => {
         error
       })
     }
-    response.status(200).send(`User deleted with ID: ${id}`)
+    response.status(200).json({
+      status: "success",
+      message: `user successfully deleted with ${id}`
+    })
   })
 }
 

@@ -21,7 +21,6 @@ const postArticles = (request, response) => {
 				error: error
 			});
 	    }
-		console.log(results)
 	    response.status(201).json({
 	    	status: "success",
 	    	data: results.rows
@@ -34,11 +33,19 @@ const getArticleById = (request, response) => {
 
 	pool.query('SELECT * FROM articles WHERE article_id = $1', [article_id], (error, results) => {
 	   	if (error) {
+			return response.status(500).json({
+				status: 'error',
+				error: 'Internal Database Error!'
+			})
+	   	}
+
+	   	if(results.rows.length === 0) {
 			return response.status(404).json({
 				status: 'error',
 				error: 'Article not found!'
 			})
 	   	}
+
 	   	const { article_id, title, article, employee_id, created_on } = results.rows[0];
 
 	   		
@@ -150,7 +157,7 @@ const updateArticle = (request, response) => {
 		   	})
 	    }
 		response.status(201).json({
-	    	status: `success: Article modified with ID: ${article_id}`,
+	    	status: 'success',
 	    	data: results.rows	    	
 	    });
 	});

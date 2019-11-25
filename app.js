@@ -36,11 +36,7 @@ app.use('/api/v1/admin', adminRoute);
 app.use('/api/v1/auth/', acctRoutes);
 
 // Getting and Modifying users
-app.use('/api/v1/getAllUsers', userRoutes);
-app.use('/api/v1/getUserById', userRoutes);
-app.use('/api/v1/updateUser', userRoutes);
-app.use('/api/v1/deleteUser', userRoutes);
-
+app.use('/api/v1/getUser', userRoutes);
 
 //  Articles
 app.use('/api/v1/articles', articleRoutes);

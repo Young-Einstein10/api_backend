@@ -32,7 +32,7 @@ const adminSignin = (request, response) => {
           
     const token = jwt.sign({ userId: results.rows[0].id, isAdmin: results.rows[0].isadmin }, 'ADMIN_TOKEN_SECRETKEY', { expiresIn: '24h' });
       response.status(200).json({
-        userId: results.rows[0].id,
+        status: 'success',
         token: token
       });              
     })       

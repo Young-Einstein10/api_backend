@@ -64,6 +64,14 @@ const getGifById = (request, response) => {
                 error: 'GIF not found'
 			})
 		}
+
+		if(results.rows.length === 0) {
+			return response.status(404).json({
+				status: 'error',
+				error: 'GIF not found!'
+			})
+	   	}
+
 		const { gif_id, title, image_url, employee_id, created_on } = results.rows[0];
 
 		pool.query('SELECT gif_comment_id as "commentId", comments as "comment", author_id as"authorId", created_on as "createdOn" FROM gif_comments WHERE gif_id = $1', [gif_id], (error, results) => {
