@@ -4,15 +4,17 @@ const jwt = require('jsonwebtoken');
 
 
 // CREATE USER
-const signup = (request, response) => {
-  const token = request.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, 'ADMIN_TOKEN_SECRETKEY');
-  if (!decodedToken) {
-    response.status(500).json({
-      status: "error",
-      message: "Invalid Token"
-    });;
-  } 
+const signup = async (request, response) => {console.log(request.headers)
+  if(!request.headers.hasOwnProperty('authorization')) {return response.status(401).json({message: "You have no authorization"})}
+  try {
+    const token = request.headers.authorization.split(' ')[1];
+
+    const decodedToken = await jwt.verify(token, 'ADMIN_TOKEN_SECRET');console.log('verified')
+  } catch(e) {
+    // statements
+    return response.status(500).json({status: "error", errorMessage: e})
+  }
+
   const {firstname, lastname, email, password, gender, jobrole, department, address } = request.body; 
 
   // Check if valid email and password was entered
@@ -95,8 +97,7 @@ const signup = (request, response) => {
 }
 
 const signin = (request, response) => {
-  const { email, password } = request.body;
-
+const { email, password } = request.body; 
   // Check if valid email and password was entered
   function validateUser(user) {
     const validEmail = typeof user.email == 'string' && user.email.trim() != '';
@@ -128,30 +129,57 @@ const signin = (request, response) => {
             return response.status(401).json({status: "error", error: error})
           }     
           const [message] = results.rows;
-   
-          bcrypt.compare(request.body.password, message.password).then(
-            (valid) => {
-              if (!valid) {
-                return response.status(401).json({
-                  status: "error",
-                  error: 'Incorrect password'
+
+          if(message.is_admin) {console.log('is_admin')
+            bcrypt.compare(request.body.password, message.password).then(
+              (valid) => {
+                if (!valid) {
+                  return response.status(401).json({
+                    status: "error",
+                    error: 'Incorrect password'
+                  });
+                }
+                const token = jwt.sign({ userId: message.id, is_admin: message.is_admin }, 'ADMIN_TOKEN_SECRET', { expiresIn: '24h' });
+                response.status(200).json({
+                  status: "success",
+                  data: {
+                    userId: message.id,
+                    token: token
+                  }
                 });
               }
-              const token = jwt.sign({ userId: message.id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });
-              response.status(200).json({
-                status: "success",
-                data: {
-                  userId: message.id,
-                  token: token
-                }
+            ).catch((error) => {
+              response.status(500).json({
+                status: "error",
+                error: next(new Error(error))
               });
-            }
-          ).catch((error) => {
-            response.status(500).json({
-              status: "error",
-              error: next(new Error(error))
-            });
-          })         
+            })      
+          } else {
+          console.log('isnot_admin')
+              bcrypt.compare(request.body.password, message.password).then(
+              (valid) => {
+                if (!valid) {
+                  return response.status(401).json({
+                    status: "error",
+                    error: 'Incorrect password'
+                  });
+                }
+                const token = jwt.sign({ userId: message.id }, 'USER_TOKEN_SECRET', { expiresIn: '24h' });
+                response.status(200).json({
+                  status: "success",
+                  data: {
+                    userId: message.id,
+                    token: token
+                  }
+                });
+              }
+            ).catch((error) => {
+              response.status(500).json({
+                status: "error",
+                error: next(new Error(error))
+              });
+            })      
+          }             
         })           
     })
   } else {
