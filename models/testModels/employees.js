@@ -1,4 +1,5 @@
-const pool = require('../testDB');
+// const pool = require('../testDB');
+const pool = require('../queries');
 
 
 /**
@@ -49,6 +50,7 @@ const dropEmployeeTable = () => {
     });
 };
 
-
+// createEmployeeTable();
+// dropEmployeeTable();
 
 module.exports = { createEmployeeTable, dropEmployeeTable }

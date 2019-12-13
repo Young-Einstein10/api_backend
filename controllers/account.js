@@ -4,14 +4,17 @@ const jwt = require('jsonwebtoken');
 
 
 // CREATE USER
-const signup = async (request, response) => {console.log(request.headers)
-  if(!request.headers.hasOwnProperty('authorization')) {return response.status(401).json({message: "You have no authorization"})}
+const signup = async (request, response) => {
+  if(!request.headers.hasOwnProperty('authorization')) {
+    return response.status(401).json({
+      message: "You have no authorization"
+    })
+  }
+
   try {
     const token = request.headers.authorization.split(' ')[1];
-
     const decodedToken = await jwt.verify(token, 'ADMIN_TOKEN_SECRET');console.log('verified')
   } catch(e) {
-    // statements
     return response.status(500).json({status: "error", errorMessage: e})
   }
 

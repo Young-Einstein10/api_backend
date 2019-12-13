@@ -1,4 +1,6 @@
-const pool = require('../testDB');
+// const pool = require('../testDB');
+const pool = require('../queries');
+
 
 const create_Article_Table = () => {
 	const queryText = `
@@ -45,6 +47,7 @@ const drop_Article_Table = () => {
 	    });	
 }
 
-
+// create_Article_Table();
+// drop_Article_Table();
 
 module.exports = { create_Article_Table, drop_Article_Table }

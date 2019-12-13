@@ -1,4 +1,6 @@
-const pool = require('../testDB');
+// const pool = require('../testDB');
+const pool = require('../queries');
+
 
 
 const createGif_Comments_Table = () => {
@@ -49,6 +51,7 @@ const dropGif_Comments_Table = () => {
 	    });	
 }
 
-
+// createGif_Comments_Table();
+// dropGif_Comments_Table();
 
 module.exports = { createGif_Comments_Table, dropGif_Comments_Table }

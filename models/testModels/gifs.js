@@ -1,7 +1,9 @@
-const pool = require('../testDB');
+// const pool = require('../testDB');
+const pool = require('../queries');
 
 
-const createGifTable = () => {
+
+const createGifsTable = () => {
 	const queryText = `
 	CREATE TABLE IF NOT EXISTS gifs
 		(
@@ -44,5 +46,7 @@ const dropGifsTable = () => {
 	    });	
 }
 
+// createGifsTable();
+// dropGifsTable();
 
 module.exports = { createGifsTable, dropGifsTable }

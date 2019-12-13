@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test-init": "node ./node_modules/jasmine/bin/jasmine.js init",
-    "test": "node ./node_modules/jasmine/bin/jasmine.js",
+    "test": "set NODE_ENV=testing&&node ./node_modules/jasmine/bin/jasmine.js",
     "start": "nodemon server.js"
   },
   "repository": "https://github.com/Young-Einstein10/backend_teamwork.git",
