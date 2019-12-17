@@ -10,7 +10,7 @@ const createArticle_CommentsTable = () => {
 		    comments text COLLATE pg_catalog."default" NOT NULL,
 		    article_id integer NOT NULL,
 		    author_id integer NOT NULL,
-		    created_on timestamp with time zone NOT NULL,
+		    created_on timestamp NOT NULL,
 		    CONSTRAINT article_comment_id PRIMARY KEY (article_comment_id),
 		    CONSTRAINT article_id FOREIGN KEY (article_id)
 		        REFERENCES articles (article_id) MATCH SIMPLE

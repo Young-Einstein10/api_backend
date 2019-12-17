@@ -10,7 +10,7 @@ const create_Article_Table = () => {
 		    title text COLLATE pg_catalog."default" NOT NULL,
 		    article text COLLATE pg_catalog."default" NOT NULL,
 		    employee_id integer NOT NULL,
-		    created_on timestamp(4) without time zone NOT NULL,
+		    created_on timestamp NOT NULL,
 		    CONSTRAINT articles_pkey PRIMARY KEY (article_id),
 		    CONSTRAINT "articles_employee_id_fkey" FOREIGN KEY (employee_id)
 		        REFERENCES employees (id) MATCH SIMPLE

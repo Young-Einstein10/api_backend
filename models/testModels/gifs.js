@@ -11,7 +11,7 @@ const createGifsTable = () => {
 		    title text COLLATE pg_catalog."default" NOT NULL,
 		    "image_url" text COLLATE pg_catalog."default" NOT NULL,
 		    "employee_id" integer NOT NULL,
-		    "created_on" timestamp with time zone NOT NULL,
+		    "created_on" timestamp NOT NULL,
 		    CONSTRAINT "gif_id" PRIMARY KEY ("gif_id"),
 		    CONSTRAINT "employee_id" FOREIGN KEY ("employee_id")
 		        REFERENCES employees (id) MATCH SIMPLE

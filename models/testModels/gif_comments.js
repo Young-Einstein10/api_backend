@@ -11,7 +11,7 @@ const createGif_Comments_Table = () => {
 		    comments text COLLATE pg_catalog."default" NOT NULL,
 		    "gif_id" integer NOT NULL,    
 		    "author_id" integer NOT NULL,
-		    "created_on" timestamp with time zone NOT NULL,
+		    "created_on" timestamp NOT NULL,
 		    CONSTRAINT "gif_comment_id" PRIMARY KEY ("gif_comment_id"),
 		    CONSTRAINT "gif_id" FOREIGN KEY ("gif_id")
 		        REFERENCES gifs ("gif_id") MATCH SIMPLE
