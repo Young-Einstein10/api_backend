@@ -1,24 +1,30 @@
 const bcrypt = require('bcrypt');
 const pool = require("../models/queries");
 const jwt = require('jsonwebtoken');
+const { createEmployeeTable } = require('../models/testModels/employees');
+
+
+createEmployeeTable(); 
 
 
 // CREATE USER
 const signup = async (request, response) => {
+  // check if request headers has auhorizaton key
   if(!request.headers.hasOwnProperty('authorization')) {
     return response.status(401).json({
       message: "You have no authorization"
     })
   }
 
+  // verify if token is for admin 
   try {
     const token = request.headers.authorization.split(' ')[1];
-    const decodedToken = await jwt.verify(token, 'ADMIN_TOKEN_SECRET');console.log('verified')
+    const decodedToken = await jwt.verify(token, 'ADMIN_TOKEN_SECRET');
   } catch(e) {
     return response.status(500).json({status: "error", errorMessage: e})
   }
 
-  const {firstname, lastname, email, password, gender, jobrole, department, address } = request.body; 
+  const {firstname, lastname, email, password, gender, jobrole, department, address, is_admin } = request.body; 
 
   // Check if valid email and password was entered
   function validateUser(user) {
@@ -54,7 +60,7 @@ const signup = async (request, response) => {
     // Hashing password and saving in DB
     bcrypt.hash(password, 8).then(
       (hash) => {
-        pool.query('INSERT INTO employees (firstname, lastname, email, password, gender, jobrole, department, address) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [firstname, lastname, email, hash, gender, jobrole, department, address], (error, results) => {
+        pool.query('INSERT INTO employees (firstname, lastname, email, password, gender, jobrole, department, address, is_admin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [firstname, lastname, email, hash, gender, jobrole, department, address, is_admin], (error, results) => {
             if (error) {
               return response.status(500).json({
                 status: "error",
@@ -142,11 +148,12 @@ const { email, password } = request.body;
                     error: 'Incorrect password'
                   });
                 }
-                const token = jwt.sign({ userId: message.id, is_admin: message.is_admin }, 'ADMIN_TOKEN_SECRET', { expiresIn: '24h' });
+                const token = jwt.sign({ userId: message.id, is_admin: message.is_admin }, 'ADMIN_TOKEN_SECRET', { expiresIn: '7d' });
                 response.status(200).json({
                   status: "success",
                   data: {
                     userId: message.id,
+                    is_admin: true,
                     token: token
                   }
                 });
@@ -167,11 +174,12 @@ const { email, password } = request.body;
                     error: 'Incorrect password'
                   });
                 }
-                const token = jwt.sign({ userId: message.id }, 'USER_TOKEN_SECRET', { expiresIn: '24h' });
+                const token = jwt.sign({ userId: message.id }, 'USER_TOKEN_SECRET', { expiresIn: '7d' });
                 response.status(200).json({
                   status: "success",
                   data: {
                     userId: message.id,
+                    is_admin: false,
                     token: token
                   }
                 });

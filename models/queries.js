@@ -1,10 +1,10 @@
 const Pool = require('pg').Pool
 const dotenv = require('dotenv');
-const { createArticle_CommentsTable, dropArticle_CommentsTable } = require('./testModels/article_comments');
-const { create_Article_Table, drop_Article_Table } = require('./testModels/articles');
-const { createGif_Comments_Table, dropGif_Comments_Table } = require('./testModels/gif_comments');
-const { createGifsTable, dropGifsTable } = require('./testModels/gifs');
-const { createEmployeeTable, dropEmployeeTable } = require('./testModels/employees');
+// const { createArticle_CommentsTable, dropArticle_CommentsTable } = require('./testModels/article_comments');
+// const { create_Article_Table, drop_Article_Table } = require('./testModels/articles');
+// const { createGif_Comments_Table, dropGif_Comments_Table } = require('./testModels/gif_comments');
+// const { createGifsTable, dropGifsTable } = require('./testModels/gifs');
+// const { createEmployeeTable, dropEmployeeTable } = require('./testModels/employees');
 
 
 dotenv.config();
@@ -18,20 +18,20 @@ dotenv.config();
 	  port: process.env.TEST_DB_PORT
 	});
 
-    createArticle_CommentsTable(); 
-    dropArticle_CommentsTable();
+    // createArticle_CommentsTable(); 
+    // dropArticle_CommentsTable();
 
-    create_Article_Table();
-    drop_Article_Table();
+    // create_Article_Table();
+    // drop_Article_Table();
 
-    createGif_Comments_Table();
-    dropGif_Comments_Table();
+    // createGif_Comments_Table();
+    // dropGif_Comments_Table();
 
-    createGifsTable(); 
-    dropGifsTable();
+    // createGifsTable(); 
+    // dropGifsTable();
 
-    createEmployeeTable(); 
-    dropEmployeeTable();
+    // createEmployeeTable(); 
+    // dropEmployeeTable();
 
 	pool.on('connect', () => {
 	  console.log('connected to the Test Database');

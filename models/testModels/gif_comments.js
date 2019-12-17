@@ -27,12 +27,12 @@ const createGif_Comments_Table = () => {
 
 	pool.query(queryText)
 	    .then(() => {
-	      console.log('GIFs Table Created');
-	      pool.end();
+	      console.log('GIF_comments Table Created');
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 }
 
@@ -42,12 +42,12 @@ const dropGif_Comments_Table = () => {
 
 	pool.query(queryText)
 	    .then(() => {
-	      console.log('GIFs Table Dropped');
-	      pool.end();
+	      console.log('GIF_comments Table Dropped');
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 }
 

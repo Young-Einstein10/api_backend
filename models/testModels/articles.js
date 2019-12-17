@@ -22,11 +22,11 @@ const create_Article_Table = () => {
 	pool.query(queryText)
 	    .then(() => {
 	      console.log('Articles Table Created');
-	      pool.end();
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 
 }
@@ -39,11 +39,11 @@ const drop_Article_Table = () => {
 	pool.query(queryText)
 	    .then(() => {
 	      console.log('Articles Table Dropped');
-	      pool.end();
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 }
 

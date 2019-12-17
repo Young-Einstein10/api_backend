@@ -9,7 +9,7 @@ const createGifsTable = () => {
 		(
 		    "gif_id" SERIAL,
 		    title text COLLATE pg_catalog."default" NOT NULL,
-		    "imageUrl" text COLLATE pg_catalog."default" NOT NULL,
+		    "image_url" text COLLATE pg_catalog."default" NOT NULL,
 		    "employee_id" integer NOT NULL,
 		    "created_on" timestamp with time zone NOT NULL,
 		    CONSTRAINT "gif_id" PRIMARY KEY ("gif_id"),
@@ -23,11 +23,11 @@ const createGifsTable = () => {
 	pool.query(queryText)
 	    .then(() => {
 	      console.log('GIFs Table Created');
-	      pool.end();
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });
 }
 
@@ -38,11 +38,11 @@ const dropGifsTable = () => {
 	pool.query(queryText)
 	    .then(() => {
 	      console.log('GIFs Table Dropped');
-	      pool.end();
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 }
 

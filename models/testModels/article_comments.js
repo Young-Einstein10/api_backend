@@ -22,17 +22,17 @@ const createArticle_CommentsTable = () => {
 		        ON UPDATE CASCADE
 		        ON DELETE RESTRICT
 		        NOT VALID
-		)`;
+		)`
 
 
 	pool.query(queryText)
 	    .then(() => {
 	      console.log('Article_comment Table Created');
-	      pool.end();
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 }
 
@@ -43,11 +43,11 @@ const dropArticle_CommentsTable = () => {
 	pool.query(queryText)
 	    .then(() => {
 	      console.log('Article_comment Table Dropped');
-	      pool.end();
+	      // pool.end();
 	    })
 	    .catch((err) => {
 	      console.log(err);
-	      pool.end();
+	      // pool.end();
 	    });	
 }
 

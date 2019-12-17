@@ -15,6 +15,7 @@ const createEmployeeTable = () => {
 		    firstname text COLLATE pg_catalog."default" NOT NULL,
 		    gender text COLLATE pg_catalog."default" NOT NULL,
 		    id SERIAL,
+        is_admin boolean NOT NULL DEFAULT false,
 		    jobrole text COLLATE pg_catalog."default" NOT NULL,
 		    lastname text COLLATE pg_catalog."default" NOT NULL,
 		    password text COLLATE pg_catalog."default" NOT NULL,
@@ -26,11 +27,11 @@ const createEmployeeTable = () => {
   pool.query(queryText)
     .then(() => {
       console.log('Employees Table Created');
-      pool.end();
+      // pool.end();
     })
     .catch((err) => {
       console.log(err);
-      pool.end();
+      // pool.end();
     });
 };
 
@@ -42,11 +43,11 @@ const dropEmployeeTable = () => {
   pool.query(queryText)
     .then((res) => {
       console.log('Table dropped');
-      pool.end();
+      // pool.end();
     })
     .catch((err) => {
       console.log(err);
-      pool.end();
+      // pool.end();
     });
 };
 

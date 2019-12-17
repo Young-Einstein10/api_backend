@@ -3,7 +3,13 @@ const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;   
 const dotenv = require('dotenv');
 const { dataUri } = require('../middleware/multerUploads');
+const { createGif_Comments_Table } = require('../models/testModels/gif_comments');
+const { createGifsTable } = require('../models/testModels/gifs');
 
+
+
+createGifsTable(); 
+createGif_Comments_Table();
 
 
 dotenv.config()

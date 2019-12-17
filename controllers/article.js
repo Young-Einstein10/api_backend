@@ -1,5 +1,13 @@
 const pool = require("../models/queries");
 const jwt = require("jsonwebtoken");
+const { createArticle_CommentsTable } = require('../models/testModels/article_comments');
+const { create_Article_Table } = require('../models/testModels/articles');
+
+
+
+create_Article_Table();
+createArticle_CommentsTable();
+
 
 const postArticles = (request, response) => {
 	const { title, article } = request.body;
@@ -47,7 +55,6 @@ const getArticleById = (request, response) => {
 	   	}
 
 	   	const { article_id, title, article, employee_id, created_on } = results.rows[0];
-
 	   		
 	   	pool.query('SELECT article_comment_id as "commentId", comments as "comment", author_id as"authorId", created_on as "createdOn" FROM article_comments WHERE article_id = $1', [article_id], (error, results) => {
 	   		if(error) {
@@ -66,6 +73,7 @@ const getArticleById = (request, response) => {
 	                createdOn: created_on,
 	                title,
 	                article,
+	                employee_id,
 	                comments: []
 	              },
 	            });
@@ -78,6 +86,7 @@ const getArticleById = (request, response) => {
 		            createdOn: created_on,
 		            title,
 		            article,
+		            employee_id,
 			        comments: results.rows
 		        }       
 	        });  	

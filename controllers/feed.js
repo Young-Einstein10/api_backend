@@ -28,7 +28,7 @@ const getFeed = (request, response) => {
 	    }
         return response.status(200).json({
           status: 'success',
-          data: 'No Article/Gif found, kindly post one',
+          data: 'No Article / Gif found, kindly post one',
         });
 	})
 } 
