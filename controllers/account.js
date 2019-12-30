@@ -7,24 +7,108 @@ const { createEmployeeTable } = require('../models/testModels/employees');
 createEmployeeTable(); 
 
 
-// CREATE USER
-const signup = async (request, response) => {
-  // check if request headers has auhorizaton key
-  if(!request.headers.hasOwnProperty('authorization')) {
-    return response.status(401).json({
-      message: "You have no authorization"
-    })
-  }
+// // CREATE USER BY ADMIN
+// const signup = async (request, response) => {
+//   // check if request headers has auhorizaton key
+//   if(!request.headers.hasOwnProperty('authorization')) {
+//     return response.status(401).json({
+//       message: "You have no authorization"
+//     })
+//   }
 
-  // verify if token is for admin 
-  try {
-    const token = request.headers.authorization.split(' ')[1];
-    const decodedToken = await jwt.verify(token, 'ADMIN_TOKEN_SECRET');
-  } catch(e) {
-    return response.status(500).json({status: "error", errorMessage: e})
-  }
+//   // verify if token is for admin 
+//   try {
+//     const token = request.headers.authorization.split(' ')[1];
+//     const decodedToken = await jwt.verify(token, 'ADMIN_TOKEN_SECRET');
+//   } catch(e) {
+//     return response.status(500).json({status: "error", errorMessage: e})
+//   }
 
-  const {firstname, lastname, email, password, gender, jobrole, department, address, is_admin } = request.body; 
+//   const {firstname, lastname, email, password, gender, jobrole, department, address, is_admin } = request.body; 
+
+//   // Check if valid email and password was entered
+//   function validateUser(user) {
+//     const validEmail = typeof user.email == 'string' && user.email.trim() != '';
+//     const validPassword = typeof user.password == 'string' && 
+//                           user.password.trim() != '' && 
+//                           user.password.trim().length >= 6;
+
+//     return validEmail && validPassword;
+//   }  
+
+//   if(validateUser(request.body)) {
+//     // Checking uniqueness of email (if email is present in DB)
+//     pool.query('SELECT email FROM employees', (error, results) => {
+//       if (error) {
+//         return response.status(500).json({
+//           status: "error",
+//           error
+//         })
+//       }
+//       // console.log(results.rows)
+//       results.rows.filter((value) => {
+//         if(email == value.email) {
+//           return response.status(400).json({
+//             status: "error",
+//             error: "User email already exists"
+//           })
+//         }
+//         return email;
+//       })
+//     })
+
+//     // Hashing password and saving in DB
+//     bcrypt.hash(password, 8).then(
+//       (hash) => {
+//         pool.query('INSERT INTO employees (firstname, lastname, email, password, gender, jobrole, department, address, is_admin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [firstname, lastname, email, hash, gender, jobrole, department, address, is_admin], (error, results) => {
+//             if (error) {
+//               return response.status(500).json({
+//                 status: "error",
+//                 error
+//               })
+//             }
+//             // console.log(results)
+//             // const [message] = results.rows;
+
+//             pool.query(`SELECT * FROM employees WHERE email='${email}'`, (error, results) => {
+//               if(error) {
+//                 return response.status(500).json({
+//                   status: "error",
+//                   error
+//                 })
+//               }
+//               // console.log(results.rows);
+
+//               const token = jwt.sign({ userId: results.rows[0].id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });
+
+//               return response.status(201).json({
+//                 status: "success",
+//                 data: {
+//                   message: "User Account successfully created",
+//                   token,
+//                 }
+//               });
+//             })      
+//         })
+//       }
+//     ).catch((error) => {
+//       response.status(500).json({
+//         status: "error",
+//         error: error
+//       })
+//     })    
+//   } else {
+//     response.status(400).json({
+//       status: "error",
+//       error: "Email or Password cannot be blank or less than 6 characters"
+//     })
+//   }  
+// }
+
+
+// CREATE USER WITHOUT ADMIN
+const signup = (request, response) => {
+  const {firstname, lastname, email, password, gender, jobrole, department, address, is_admin=false } = request.body; 
 
   // Check if valid email and password was entered
   function validateUser(user) {
@@ -79,7 +163,7 @@ const signup = async (request, response) => {
               }
               // console.log(results.rows);
 
-              const token = jwt.sign({ userId: results.rows[0].id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });
+              const token = jwt.sign({ userId: results.rows[0].id }, 'USER_TOKEN_SECRET', { expiresIn: '24h' });
 
               return response.status(201).json({
                 status: "success",
@@ -104,6 +188,8 @@ const signup = async (request, response) => {
     })
   }  
 }
+
+
 
 const signin = (request, response) => {
 const { email, password } = request.body; 

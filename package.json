@@ -5,6 +5,7 @@
   "scripts": {
     "test-init": "node ./node_modules/jasmine/bin/jasmine.js init",
     "test": "set NODE_ENV=testing&&node ./node_modules/jasmine/bin/jasmine.js",
+    "dev": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": "https://github.com/Young-Einstein10/backend_teamwork.git",
@@ -32,6 +33,6 @@
     "supertest": "^4.0.2"
   },
   "engines": {
-    "node": "10.x"
+    "node": "12.3.1"
   }
 }
