@@ -9,7 +9,7 @@ const getAllUsers = (request, response) => {
     }
     response.status(200).json({
       status: "success",
-      data: results.rows
+      data: results.rows[0]
     })
   })
 }
@@ -26,7 +26,7 @@ const getUserById = (request, response) => {
         error
       })
     }
-    response.status(200).json({status: "success", data: results.rows})
+    response.status(200).json({status: "success", data: results.rows[0]})
   })
 }
 

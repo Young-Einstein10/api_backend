@@ -13,7 +13,7 @@ const postArticles = (request, response) => {
 	const { title, article } = request.body;
 
 	const token = request.headers.authorization.split(' ')[1];
-	const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+	const decodedToken = jwt.verify(token, 'USER_TOKEN_SECRET');
 	if (!decodedToken) {
 		response.status(401).json({
 			status: "error",
@@ -31,7 +31,7 @@ const postArticles = (request, response) => {
 	    }
 	    response.status(201).json({
 	    	status: "success",
-	    	data: results.rows
+	    	data: results.rows[0]
 	    });
 	})
 }
@@ -101,7 +101,7 @@ const comment = (request, response) => {
 	
 	const  { comments } = request.body;
 	const token = request.headers.authorization.split(' ')[1];
-	const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+	const decodedToken = jwt.verify(token, 'USER_TOKEN_SECRET');
 	if (!decodedToken) {
 		response.status(401).json({
 			status: "error",
@@ -135,7 +135,7 @@ const comment = (request, response) => {
 		   			})
 		   		}
 		   		const res = results.rows.find(item => item.comments == request.body.comments)
-		   		// console.log(res);
+		   		console.log(res);
 
 		   		const { title, article, comments, created_on } = res;
 		   		// return response.status(201).send("success")
@@ -164,10 +164,10 @@ const updateArticle = (request, response) => {
 		   		status: "error",
 		   		error: "error updating article"
 		   	})
-	    }
+	    }console.log(results.rows)
 		response.status(201).json({
 	    	status: 'success',
-	    	data: results.rows	    	
+	    	data: results.rows[0]	    	
 	    });
 	});
 }
